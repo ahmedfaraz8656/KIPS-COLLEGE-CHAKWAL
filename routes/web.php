@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Students\StudentController;
 use App\Http\Controllers\Students\StudentImportExportController;
+use App\Http\Controllers\Students\StudentTransferController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -49,5 +50,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/import/template',  [StudentImportExportController::class, 'downloadTemplate'])->name('import.template');
         Route::post('/import/preview',  [StudentImportExportController::class, 'preview'])->name('import.preview');
         Route::post('/export',          [StudentImportExportController::class, 'export'])->name('export');
+
+        // ── MODULE 4: Move / Transfer ───────────────────────────
+        Route::get('/transfer',                [StudentTransferController::class, 'index'])->name('transfer');
+        Route::get('/transfer/sections',        [StudentTransferController::class, 'sectionsByFilter'])->name('transfer.sections');
+        Route::get('/transfer/students',        [StudentTransferController::class, 'studentsInSection'])->name('transfer.students');
+        Route::post('/transfer/move',           [StudentTransferController::class, 'move'])->name('transfer.move');
+
+        // ── MODULE 4: Promotion (1st Year → 2nd Year) ───────────
+        Route::get('/promote',   [StudentTransferController::class, 'promotionIndex'])->name('promote');
+        Route::post('/promote',  [StudentTransferController::class, 'promote'])->name('promote.execute');
     });
 });

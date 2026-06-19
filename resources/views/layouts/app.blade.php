@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') — Capes College ERP</title>
+    <title>@yield('title', 'Dashboard') — KIPS College ERP</title>
 
     {{-- CSS --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
@@ -512,7 +512,7 @@
             <i class="fa-solid fa-graduation-cap"></i>
         </div>
         <div class="brand-text">
-            CAPES COLLEGE
+            KIPS COLLEGE
             <span class="brand-sub">ERP System</span>
         </div>
     </a>
@@ -536,35 +536,35 @@
         <div class="nav-section">Students</div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom {{ request()->routeIs('students*') ? 'active' : '' }}">
+            <a href="{{ route('students.create') }}" class="nav-link-custom {{ request()->routeIs('students.create') ? 'active' : '' }}">
                 <i class="fa-solid fa-user-plus nav-icon"></i>
                 <span class="nav-label">New Admission</span>
             </a>
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('students.index') }}" class="nav-link-custom {{ request()->routeIs('students.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-users nav-icon"></i>
                 <span class="nav-label">All Students</span>
             </a>
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('students.index') }}" class="nav-link-custom">
                 <i class="fa-solid fa-layer-group nav-icon"></i>
                 <span class="nav-label">By Section</span>
             </a>
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('students.transfer') }}" class="nav-link-custom {{ request()->routeIs('students.transfer') ? 'active' : '' }}">
                 <i class="fa-solid fa-arrow-right-arrow-left nav-icon"></i>
                 <span class="nav-label">Move / Transfer</span>
             </a>
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('students.promote') }}" class="nav-link-custom {{ request()->routeIs('students.promote') ? 'active' : '' }}">
                 <i class="fa-solid fa-level-up-alt nav-icon"></i>
                 <span class="nav-label">Promote Year</span>
             </a>

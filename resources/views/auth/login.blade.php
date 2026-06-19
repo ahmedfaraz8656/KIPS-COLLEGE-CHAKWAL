@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Login — Capes College Chakwal ERP</title>
+    <title>Login — KIPS College Chakwal ERP</title>
 
     {{-- Bootstrap 5 --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
@@ -230,7 +230,7 @@
                 {{-- Replace with: <img src="{{ asset('images/logo.png') }}" style="width:50px"> --}}
                 <i class="fa-solid fa-graduation-cap"></i>
             </div>
-            <h1 class="college-name">CAPES COLLEGE CHAKWAL</h1>
+            <h1 class="college-name">KIPS COLLEGE CHAKWAL</h1>
             <p class="college-sub">College Management ERP System</p>
         </div>
 
@@ -304,7 +304,7 @@
         {{-- ── FOOTER ─────────────────────────────────── --}}
         <div class="login-footer">
             <i class="fa-solid fa-shield-halved me-1"></i>
-            Secure ERP System &nbsp;|&nbsp; Capes College Chakwal &nbsp;|&nbsp;
+            Secure ERP System &nbsp;|&nbsp; KIPS College Chakwal &nbsp;|&nbsp;
             &copy; {{ date('Y') }}
         </div>
     </div>
