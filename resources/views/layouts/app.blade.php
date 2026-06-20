@@ -595,23 +595,25 @@
 
         @canany(['mark attendance'])
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('attendance.mark') }}" class="nav-link-custom {{ request()->routeIs('attendance.mark') ? 'active' : '' }}">
                 <i class="fa-solid fa-clipboard-check nav-icon"></i>
                 <span class="nav-label">Mark Attendance</span>
             </a>
         </div>
         @endcanany
 
+        @canany(['view attendance'])
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('attendance.reports') }}" class="nav-link-custom {{ request()->routeIs('attendance.reports') ? 'active' : '' }}">
                 <i class="fa-solid fa-chart-line nav-icon"></i>
                 <span class="nav-label">Att. Reports</span>
             </a>
         </div>
+        @endcanany
 
-        @canany(['manage settings'])
+        @canany(['manage holidays'])
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('attendance.holidays') }}" class="nav-link-custom {{ request()->routeIs('attendance.holidays') ? 'active' : '' }}">
                 <i class="fa-solid fa-calendar-xmark nav-icon"></i>
                 <span class="nav-label">Holidays</span>
             </a>

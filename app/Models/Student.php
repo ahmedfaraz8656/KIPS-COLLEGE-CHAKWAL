@@ -12,6 +12,7 @@ class Student extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'roll_number', 'roll_number_manually_edited',
         'name', 'father_name', 'cnic_bform', 'dob', 'whatsapp', 'alternate_phone',
         'address', 'previous_school', 'photo',
@@ -29,6 +30,7 @@ class Student extends Model
     ];
 
     // ─── RELATIONSHIPS ───────────────────────────────────────────
+    public function user(): BelongsTo { return $this->belongsTo(User::class); }
     public function program(): BelongsTo { return $this->belongsTo(Program::class); }
     public function section(): BelongsTo { return $this->belongsTo(Section::class); }
     public function createdBy(): BelongsTo { return $this->belongsTo(User::class, 'created_by'); }

@@ -93,6 +93,24 @@ class User extends Authenticatable
         return route('dashboard');
     }
 
+    /** Used by Class Incharge dashboard / Attendance permission checks. */
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class);
+    }
+
+    /** Used when a Student-role user logs in to find their own record. */
+    public function student()
+    {
+        return $this->hasOne(Student::class);
+    }
+
+    /** Used when a Parent-role user logs in to find their linked children. */
+    public function children()
+    {
+        return $this->belongsToMany(Student::class, 'parent_student', 'user_id', 'student_id');
+    }
+
     /** Used by EnsureUserIsActive middleware for temporary-access accounts. */
     public function hasExpiredAccess(): bool
     {

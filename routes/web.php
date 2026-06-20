@@ -7,6 +7,8 @@ use App\Http\Controllers\Students\StudentImportExportController;
 use App\Http\Controllers\Students\StudentTransferController;
 use App\Http\Controllers\Teachers\TeacherController;
 use App\Http\Controllers\Teachers\TeacherAssignmentController;
+use App\Http\Controllers\Attendance\AttendanceController;
+use App\Http\Controllers\Attendance\HolidayController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -86,5 +88,31 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/incharge/check-conflict',         [TeacherAssignmentController::class, 'checkInchargeConflict'])->name('incharge.check');
         Route::post('/{teacher}/incharge',              [TeacherAssignmentController::class, 'assignIncharge'])->name('incharge.assign');
         Route::delete('/incharge/{incharge}',           [TeacherAssignmentController::class, 'removeIncharge'])->name('incharge.remove');
+    });
+
+    // ── MODULE 6: ATTENDANCE ────────────────────────────────────
+    Route::prefix('attendance')->name('attendance.')->group(function () {
+        Route::middleware('permission:mark attendance')->group(function () {
+            Route::get('/mark',          [AttendanceController::class, 'markPage'])->name('mark');
+            Route::get('/mark/students', [AttendanceController::class, 'loadStudents'])->name('mark.students');
+            Route::post('/mark/save',    [AttendanceController::class, 'save'])->name('mark.save');
+            Route::post('/mark/all',     [AttendanceController::class, 'markAll'])->name('mark.all');
+        });
+
+        Route::middleware('permission:view attendance')->group(function () {
+            Route::get('/reports',          [AttendanceController::class, 'reportsPage'])->name('reports');
+            Route::get('/reports/section',  [AttendanceController::class, 'sectionReport'])->name('reports.section');
+        });
+
+        // Student/Parent self-service: own-record check is enforced inside the controller
+        Route::middleware('permission:view attendance|view own attendance|view child attendance')->group(function () {
+            Route::get('/reports/student',  [AttendanceController::class, 'studentReport'])->name('reports.student');
+        });
+
+        Route::middleware('permission:manage holidays')->group(function () {
+            Route::get('/holidays',         [HolidayController::class, 'index'])->name('holidays');
+            Route::post('/holidays',        [HolidayController::class, 'store'])->name('holidays.store');
+            Route::delete('/holidays/{holiday}', [HolidayController::class, 'destroy'])->name('holidays.destroy');
+        });
     });
 });
