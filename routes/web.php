@@ -5,6 +5,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Students\StudentController;
 use App\Http\Controllers\Students\StudentImportExportController;
 use App\Http\Controllers\Students\StudentTransferController;
+use App\Http\Controllers\Teachers\TeacherController;
+use App\Http\Controllers\Teachers\TeacherAssignmentController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -60,5 +62,29 @@ Route::middleware(['auth'])->group(function () {
         // ── MODULE 4: Promotion (1st Year → 2nd Year) ───────────
         Route::get('/promote',   [StudentTransferController::class, 'promotionIndex'])->name('promote');
         Route::post('/promote',  [StudentTransferController::class, 'promote'])->name('promote.execute');
+    });
+
+    // ── MODULE 5: TEACHER MANAGEMENT ────────────────────────────
+    Route::middleware('permission:manage teachers')->prefix('teachers')->name('teachers.')->group(function () {
+        Route::get('/',               [TeacherController::class, 'index'])->name('index');
+        Route::get('/list',           [TeacherController::class, 'list'])->name('list');
+        Route::get('/create',         [TeacherController::class, 'create'])->name('create');
+        Route::post('/',              [TeacherController::class, 'store'])->name('store');
+        Route::get('/{teacher}',      [TeacherController::class, 'show'])->name('show');
+        Route::get('/{teacher}/edit', [TeacherController::class, 'edit'])->name('edit');
+        Route::put('/{teacher}',      [TeacherController::class, 'update'])->name('update');
+        Route::delete('/{teacher}',   [TeacherController::class, 'destroy'])->name('destroy');
+        Route::post('/{teacher}/toggle-status', [TeacherController::class, 'toggleStatus'])->name('toggle-status');
+        Route::get('/{teacher}/workload', [TeacherController::class, 'workload'])->name('workload');
+
+        // Teaching Assignments
+        Route::get('/sections/subjects',               [TeacherAssignmentController::class, 'subjectsForSection'])->name('sections.subjects');
+        Route::post('/{teacher}/assignments',          [TeacherAssignmentController::class, 'addAssignment'])->name('assignments.add');
+        Route::delete('/assignments/{assignment}',     [TeacherAssignmentController::class, 'removeAssignment'])->name('assignments.remove');
+
+        // Class Incharge
+        Route::get('/incharge/check-conflict',         [TeacherAssignmentController::class, 'checkInchargeConflict'])->name('incharge.check');
+        Route::post('/{teacher}/incharge',              [TeacherAssignmentController::class, 'assignIncharge'])->name('incharge.assign');
+        Route::delete('/incharge/{incharge}',           [TeacherAssignmentController::class, 'removeIncharge'])->name('incharge.remove');
     });
 });
