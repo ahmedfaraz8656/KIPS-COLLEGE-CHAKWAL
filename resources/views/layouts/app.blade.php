@@ -623,9 +623,16 @@
         {{-- EXAMS --}}
         <div class="nav-section">Examinations</div>
 
+        <div class="nav-item-wrapper">
+            <a href="{{ route('exams.index') }}" class="nav-link-custom {{ request()->routeIs('exams.index') ? 'active' : '' }}">
+                <i class="fa-solid fa-file-alt nav-icon"></i>
+                <span class="nav-label">All Exams</span>
+            </a>
+        </div>
+
         @canany(['create exam'])
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('exams.create') }}" class="nav-link-custom {{ request()->routeIs('exams.create') ? 'active' : '' }}">
                 <i class="fa-solid fa-file-circle-plus nav-icon"></i>
                 <span class="nav-label">Create Exam</span>
             </a>
@@ -634,7 +641,7 @@
 
         @canany(['enter marks'])
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('exams.marks-entry.index') }}" class="nav-link-custom {{ request()->routeIs('exams.marks-entry.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-pen-to-square nav-icon"></i>
                 <span class="nav-label">Marks Entry</span>
             </a>
