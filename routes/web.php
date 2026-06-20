@@ -9,6 +9,8 @@ use App\Http\Controllers\Teachers\TeacherController;
 use App\Http\Controllers\Teachers\TeacherAssignmentController;
 use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Attendance\HolidayController;
+use App\Http\Controllers\Exams\ExamController;
+use App\Http\Controllers\Exams\MarksEntryController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -113,6 +115,31 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/holidays',         [HolidayController::class, 'index'])->name('holidays');
             Route::post('/holidays',        [HolidayController::class, 'store'])->name('holidays.store');
             Route::delete('/holidays/{holiday}', [HolidayController::class, 'destroy'])->name('holidays.destroy');
+        });
+    });
+
+    // ── MODULE 7: EXAMINATION ───────────────────────────────────
+    Route::prefix('exams')->name('exams.')->group(function () {
+        Route::middleware('permission:create exam')->group(function () {
+            Route::get('/',                  [ExamController::class, 'index'])->name('index');
+            Route::get('/create',            [ExamController::class, 'create'])->name('create');
+            Route::get('/default-subjects',  [ExamController::class, 'getDefaultSubjects'])->name('default-subjects');
+            Route::get('/affected-sections',  [ExamController::class, 'affectedSections'])->name('affected-sections');
+            Route::post('/',                 [ExamController::class, 'store'])->name('store');
+            Route::get('/{exam}',            [ExamController::class, 'show'])->name('show');
+            Route::delete('/{exam}',         [ExamController::class, 'destroy'])->name('destroy');
+            Route::post('/{exam}/extend-due-date', [ExamController::class, 'extendDueDate'])->name('extend-due-date');
+            Route::get('/{exam}/incomplete-teachers', [ExamController::class, 'incompleteTeachers'])->name('incomplete-teachers');
+        });
+
+        // Marks Entry — accessible to Teachers too (not just exam-creators)
+        Route::middleware('permission:enter marks')->prefix('marks-entry')->name('marks-entry.')->group(function () {
+            Route::get('/',              [MarksEntryController::class, 'index'])->name('index');
+            Route::get('/sections',      [MarksEntryController::class, 'sectionsForEntry'])->name('sections');
+            Route::get('/subjects',      [MarksEntryController::class, 'subjectsForEntry'])->name('subjects');
+            Route::get('/table',         [MarksEntryController::class, 'loadMarksTable'])->name('table');
+            Route::post('/save',         [MarksEntryController::class, 'saveMarks'])->name('save');
+            Route::post('/set-same',     [MarksEntryController::class, 'setSameMark'])->name('set-same');
         });
     });
 });

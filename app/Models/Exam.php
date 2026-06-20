@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Exam extends Model
 {
     protected $fillable = [
-        'name', 'type', 'sequence', 'exam_date', 'campus_scope', 'description',
+        'name', 'type', 'sequence', 'exam_date', 'campus_scope', 'year_scope', 'description',
         'grading_template_id', 'marks_due_date', 'marks_due_date_extended_to',
         'is_locked', 'is_demo', 'created_by',
     ];
