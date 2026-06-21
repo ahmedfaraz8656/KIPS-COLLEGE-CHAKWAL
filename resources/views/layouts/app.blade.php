@@ -666,7 +666,7 @@
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('roll-slips.index') }}" class="nav-link-custom {{ request()->routeIs('roll-slips.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-id-card nav-icon"></i>
                 <span class="nav-label">Roll Slips</span>
             </a>

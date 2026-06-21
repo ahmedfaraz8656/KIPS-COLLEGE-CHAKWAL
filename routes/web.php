@@ -13,6 +13,7 @@ use App\Http\Controllers\Exams\ExamController;
 use App\Http\Controllers\Exams\MarksEntryController;
 use App\Http\Controllers\Exams\GradingController;
 use App\Http\Controllers\Results\ResultController;
+use App\Http\Controllers\Results\RollSlipController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -160,6 +161,12 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/preview',          [ResultController::class, 'preview'])->name('preview');
             Route::post('/pdf',              [ResultController::class, 'generatePdf'])->name('pdf');
             Route::post('/share-link',       [ResultController::class, 'shareLink'])->name('share-link');
+        });
+
+        // ── MODULE 10: Roll Number Slips ─────────────────────────
+        Route::middleware('permission:create exam')->prefix('roll-slips')->name('roll-slips.')->group(function () {
+            Route::get('/',     [RollSlipController::class, 'index'])->name('index');
+            Route::post('/pdf', [RollSlipController::class, 'generatePdf'])->name('pdf');
         });
     });
 });
