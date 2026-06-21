@@ -805,9 +805,9 @@
             {{-- Notifications --}}
             <div class="dropdown">
                 <button class="notif-btn" data-bs-toggle="dropdown" data-bs-auto-close="outside"
-                        title="Notifications">
+                        title="Notifications" id="notifBellBtn">
                     <i class="fa-solid fa-bell"></i>
-                    <span class="notif-badge" id="notifBadge">3</span>
+                    <span class="notif-badge d-none" id="notifBadge">0</span>
                 </button>
                 <div class="dropdown-menu notif-dropdown p-0" id="notifDropdown">
                     <div class="notif-header">
@@ -823,7 +823,9 @@
                         </div>
                     </div>
                     <div class="notif-footer">
-                        <a href="#">View All Notifications</a>
+                        @can('manage notices')
+                        <a href="{{ route('notifications.index') }}">View All Notifications</a>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -971,11 +973,48 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// ── Mark All Notifications Read ──────────────────────────────────
-function markAllRead() {
-    document.getElementById('notifBadge').style.display = 'none';
-    document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+// ── Real Notifications (Module 12) ───────────────────────────────
+function loadNotifications() {
+    $.get('{{ route("notifications.bell") }}', function (res) {
+        const badge = $('#notifBadge');
+        if (res.unread_count > 0) {
+            badge.removeClass('d-none').text(res.unread_count > 9 ? '9+' : res.unread_count);
+        } else {
+            badge.addClass('d-none');
+        }
+
+        if (!res.data.length) {
+            $('#notifList').html('<div class="text-center py-4 text-muted" style="font-size:13px"><i class="fa-solid fa-bell-slash fa-2x mb-2 d-block"></i>No notifications</div>');
+            return;
+        }
+
+        let html = '';
+        res.data.forEach(n => {
+            html += `<div class="notif-item ${n.is_read ? '' : 'unread'}" data-id="${n.id}">
+                <b>${n.title}</b><br>
+                <span class="text-muted">${n.message}</span><br>
+                <span class="text-muted" style="font-size:11px">${n.time_ago}</span>
+            </div>`;
+        });
+        $('#notifList').html(html);
+    });
 }
+
+$('#notifBellBtn').on('click', loadNotifications);
+$(document).on('click', '.notif-item.unread', function () {
+    const id = $(this).data('id');
+    $.post(`/notifications/${id}/read`, { _token: $('meta[name="csrf-token"]').attr('content') });
+    $(this).removeClass('unread');
+});
+
+function markAllRead() {
+    $.post('{{ route("notifications.read-all") }}', { _token: $('meta[name="csrf-token"]').attr('content') })
+        .done(() => loadNotifications());
+}
+
+// Poll every 60s for new notifications
+loadNotifications();
+setInterval(loadNotifications, 60000);
 
 // ── Session Timeout Warning ──────────────────────────────────────
 (function () {

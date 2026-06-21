@@ -15,6 +15,7 @@ use App\Http\Controllers\Exams\GradingController;
 use App\Http\Controllers\Results\ResultController;
 use App\Http\Controllers\Results\RollSlipController;
 use App\Http\Controllers\Fees\FeeController;
+use App\Http\Controllers\Notifications\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -183,6 +184,20 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/payment/{fee}',   [FeeController::class, 'destroyPayment'])->name('payment.destroy');
 
         Route::get('/reports', [FeeController::class, 'reports'])->name('reports');
+    });
+
+    // ── MODULE 12: NOTIFICATIONS ────────────────────────────────
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        // Bell dropdown — every logged-in user can read their own
+        Route::get('/bell',              [NotificationController::class, 'bellList'])->name('bell');
+        Route::post('/{recipient}/read', [NotificationController::class, 'markRead'])->name('read');
+        Route::post('/read-all',         [NotificationController::class, 'markAllRead'])->name('read-all');
+
+        // Admin-only: create + history
+        Route::middleware('permission:manage notices')->group(function () {
+            Route::get('/',  [NotificationController::class, 'index'])->name('index');
+            Route::post('/', [NotificationController::class, 'store'])->name('store');
+        });
     });
 });
 
