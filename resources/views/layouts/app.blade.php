@@ -659,7 +659,7 @@
         <div class="nav-section">Results</div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('results.index') }}" class="nav-link-custom {{ request()->routeIs('results.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-chart-bar nav-icon"></i>
                 <span class="nav-label">Progress Reports</span>
             </a>

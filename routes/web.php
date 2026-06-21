@@ -12,6 +12,7 @@ use App\Http\Controllers\Attendance\HolidayController;
 use App\Http\Controllers\Exams\ExamController;
 use App\Http\Controllers\Exams\MarksEntryController;
 use App\Http\Controllers\Exams\GradingController;
+use App\Http\Controllers\Results\ResultController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -151,5 +152,18 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/{template}/set-default', [GradingController::class, 'setDefault'])->name('set-default');
             Route::delete('/{template}', [GradingController::class, 'destroy'])->name('destroy');
         });
+
+        // ── MODULE 9: Results & Progress Reports ────────────────
+        Route::middleware('permission:view results')->prefix('results')->name('results.')->group(function () {
+            Route::get('/',                  [ResultController::class, 'index'])->name('index');
+            Route::get('/resolve-students',  [ResultController::class, 'resolveStudents'])->name('resolve-students');
+            Route::post('/preview',          [ResultController::class, 'preview'])->name('preview');
+            Route::post('/pdf',              [ResultController::class, 'generatePdf'])->name('pdf');
+            Route::post('/share-link',       [ResultController::class, 'shareLink'])->name('share-link');
+        });
     });
 });
+
+// Public signed route (24h expiring share link) — outside auth, validated by signature
+Route::get('/results/shared', [ResultController::class, 'sharedPdf'])
+    ->name('results.shared-pdf')->middleware('signed');
