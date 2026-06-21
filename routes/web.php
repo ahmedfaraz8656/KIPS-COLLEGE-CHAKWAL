@@ -11,6 +11,7 @@ use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Attendance\HolidayController;
 use App\Http\Controllers\Exams\ExamController;
 use App\Http\Controllers\Exams\MarksEntryController;
+use App\Http\Controllers\Exams\GradingController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -140,6 +141,15 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/table',         [MarksEntryController::class, 'loadMarksTable'])->name('table');
             Route::post('/save',         [MarksEntryController::class, 'saveMarks'])->name('save');
             Route::post('/set-same',     [MarksEntryController::class, 'setSameMark'])->name('set-same');
+        });
+
+        // ── MODULE 8: Grading Templates ─────────────────────────
+        Route::middleware('permission:manage grading')->prefix('grading')->name('grading.')->group(function () {
+            Route::get('/',             [GradingController::class, 'index'])->name('index');
+            Route::post('/',            [GradingController::class, 'store'])->name('store');
+            Route::put('/{template}',   [GradingController::class, 'update'])->name('update');
+            Route::post('/{template}/set-default', [GradingController::class, 'setDefault'])->name('set-default');
+            Route::delete('/{template}', [GradingController::class, 'destroy'])->name('destroy');
         });
     });
 });

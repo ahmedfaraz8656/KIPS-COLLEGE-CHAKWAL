@@ -649,7 +649,7 @@
         @endcanany
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('grading.index') }}" class="nav-link-custom {{ request()->routeIs('grading.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-star-half-stroke nav-icon"></i>
                 <span class="nav-label">Grading</span>
             </a>
