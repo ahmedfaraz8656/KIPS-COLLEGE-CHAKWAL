@@ -37,6 +37,7 @@ class Student extends Model
     public function sectionHistory(): HasMany { return $this->hasMany(StudentSectionHistory::class); }
     public function attendance(): HasMany { return $this->hasMany(Attendance::class); }
     public function marks(): HasMany { return $this->hasMany(StudentMark::class); }
+    public function fees(): HasMany { return $this->hasMany(Fee::class); }
 
     // ─── ACCESSORS ───────────────────────────────────────────────
     public function getPhotoUrlAttribute(): string

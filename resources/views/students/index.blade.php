@@ -201,6 +201,7 @@ $(function () {
                 <button class="btn btn-sm action-view" data-id="${id}" title="View" style="color:#3498DB;"><i class="fa-solid fa-eye"></i></button>
                 <button class="btn btn-sm action-edit" data-id="${id}" title="Edit" style="color:#F39C12;"><i class="fa-solid fa-edit"></i></button>
                 <button class="btn btn-sm action-move" data-id="${id}" title="Move" style="color:#1E3A5F;"><i class="fa-solid fa-exchange-alt"></i></button>
+                <a href="/fees/ledger/${id}" class="btn btn-sm" title="Fee Ledger" style="color:#27AE60;"><i class="fa-solid fa-money-bill-wave"></i></a>
                 <button class="btn btn-sm action-delete" data-id="${id}" title="Delete" style="color:#E74C3C;"><i class="fa-solid fa-trash-alt"></i></button>
             ` }
         ],

@@ -677,14 +677,14 @@
         <div class="nav-section">Fees</div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('fees.structure') }}" class="nav-link-custom {{ request()->routeIs('fees.structure') ? 'active' : '' }}">
                 <i class="fa-solid fa-money-bill-wave nav-icon"></i>
                 <span class="nav-label">Fee Management</span>
             </a>
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('fees.reports') }}" class="nav-link-custom {{ request()->routeIs('fees.reports') ? 'active' : '' }}">
                 <i class="fa-solid fa-file-invoice-dollar nav-icon"></i>
                 <span class="nav-label">Fee Reports</span>
             </a>

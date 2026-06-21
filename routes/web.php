@@ -14,6 +14,7 @@ use App\Http\Controllers\Exams\MarksEntryController;
 use App\Http\Controllers\Exams\GradingController;
 use App\Http\Controllers\Results\ResultController;
 use App\Http\Controllers\Results\RollSlipController;
+use App\Http\Controllers\Fees\FeeController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -168,6 +169,20 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/',     [RollSlipController::class, 'index'])->name('index');
             Route::post('/pdf', [RollSlipController::class, 'generatePdf'])->name('pdf');
         });
+    });
+
+    // ── MODULE 11: FEE MANAGEMENT ───────────────────────────────
+    Route::middleware('permission:manage fees')->prefix('fees')->name('fees.')->group(function () {
+        Route::get('/structure',          [FeeController::class, 'structureIndex'])->name('structure');
+        Route::post('/structure',         [FeeController::class, 'storeStructure'])->name('structure.store');
+        Route::delete('/structure/{structure}', [FeeController::class, 'destroyStructure'])->name('structure.destroy');
+
+        Route::get('/ledger/{student}',   [FeeController::class, 'ledger'])->name('ledger');
+        Route::post('/ledger/{student}',  [FeeController::class, 'storePayment'])->name('ledger.store');
+        Route::post('/waiver/{fee}',      [FeeController::class, 'applyWaiver'])->name('waiver');
+        Route::delete('/payment/{fee}',   [FeeController::class, 'destroyPayment'])->name('payment.destroy');
+
+        Route::get('/reports', [FeeController::class, 'reports'])->name('reports');
     });
 });
 

@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             SectionSeeder::class,
             ProgramSubjectSeeder::class,
             GradingTemplateSeeder::class,
+            FeeCategorySeeder::class,
             AdminUserSeeder::class,
             SettingsSeeder::class,
         ]);
