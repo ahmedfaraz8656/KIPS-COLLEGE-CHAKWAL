@@ -18,6 +18,7 @@ use App\Http\Controllers\Fees\FeeController;
 use App\Http\Controllers\Notifications\NotificationController;
 use App\Http\Controllers\Calendar\CalendarController;
 use App\Http\Controllers\Timetable\TimetableController;
+use App\Http\Controllers\Notices\NoticeController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -225,6 +226,18 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/check-conflict', [TimetableController::class, 'checkConflict'])->name('check-conflict');
             Route::post('/assign',         [TimetableController::class, 'assign'])->name('assign');
             Route::delete('/entry/{entry}', [TimetableController::class, 'removeEntry'])->name('entry.remove');
+        });
+    });
+
+    // ── MODULE 15: NOTICE BOARD ─────────────────────────────────
+    Route::prefix('notices')->name('notices.')->group(function () {
+        Route::get('/',              [NoticeController::class, 'index'])->name('index');
+        Route::post('/{notice}/read',[NoticeController::class, 'markRead'])->name('read');
+
+        Route::middleware('permission:manage notices')->group(function () {
+            Route::post('/',                 [NoticeController::class, 'store'])->name('store');
+            Route::post('/{notice}/archive',  [NoticeController::class, 'archive'])->name('archive');
+            Route::delete('/{notice}',        [NoticeController::class, 'destroy'])->name('destroy');
         });
     });
 });

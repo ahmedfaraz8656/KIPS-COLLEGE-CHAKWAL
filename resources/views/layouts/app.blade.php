@@ -695,7 +695,7 @@
         <div class="nav-section">College</div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('notices.index') }}" class="nav-link-custom {{ request()->routeIs('notices.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-bullhorn nav-icon"></i>
                 <span class="nav-label">Notice Board</span>
             </a>
