@@ -702,7 +702,7 @@
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('calendar.index') }}" class="nav-link-custom {{ request()->routeIs('calendar.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-calendar-alt nav-icon"></i>
                 <span class="nav-label">Academic Calendar</span>
             </a>

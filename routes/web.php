@@ -16,6 +16,7 @@ use App\Http\Controllers\Results\ResultController;
 use App\Http\Controllers\Results\RollSlipController;
 use App\Http\Controllers\Fees\FeeController;
 use App\Http\Controllers\Notifications\NotificationController;
+use App\Http\Controllers\Calendar\CalendarController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -197,6 +198,18 @@ Route::middleware(['auth'])->group(function () {
         Route::middleware('permission:manage notices')->group(function () {
             Route::get('/',  [NotificationController::class, 'index'])->name('index');
             Route::post('/', [NotificationController::class, 'store'])->name('store');
+        });
+    });
+
+    // ── MODULE 13: ACADEMIC CALENDAR ────────────────────────────
+    Route::prefix('calendar')->name('calendar.')->group(function () {
+        Route::get('/',              [CalendarController::class, 'index'])->name('index');
+        Route::get('/events',        [CalendarController::class, 'eventsForMonth'])->name('events');
+
+        Route::middleware('permission:manage calendar')->group(function () {
+            Route::post('/event',              [CalendarController::class, 'storeEvent'])->name('event.store');
+            Route::delete('/holiday/{holiday}', [CalendarController::class, 'destroyHoliday'])->name('holiday.destroy');
+            Route::delete('/event/{event}',     [CalendarController::class, 'destroyEvent'])->name('event.destroy');
         });
     });
 });
