@@ -17,6 +17,7 @@ use App\Http\Controllers\Results\RollSlipController;
 use App\Http\Controllers\Fees\FeeController;
 use App\Http\Controllers\Notifications\NotificationController;
 use App\Http\Controllers\Calendar\CalendarController;
+use App\Http\Controllers\Timetable\TimetableController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -210,6 +211,20 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/event',              [CalendarController::class, 'storeEvent'])->name('event.store');
             Route::delete('/holiday/{holiday}', [CalendarController::class, 'destroyHoliday'])->name('holiday.destroy');
             Route::delete('/event/{event}',     [CalendarController::class, 'destroyEvent'])->name('event.destroy');
+        });
+    });
+
+    // ── MODULE 14: TIMETABLE ────────────────────────────────────
+    Route::prefix('timetable')->name('timetable.')->group(function () {
+        Route::get('/', [TimetableController::class, 'index'])->name('index');
+        Route::get('/section/{section}',          [TimetableController::class, 'sectionGrid'])->name('section.grid');
+        Route::get('/section/{section}/subjects', [TimetableController::class, 'subjectsForSection'])->name('section.subjects');
+        Route::get('/teacher/{teacher}',          [TimetableController::class, 'teacherView'])->name('teacher.view');
+
+        Route::middleware('permission:manage timetable')->group(function () {
+            Route::post('/check-conflict', [TimetableController::class, 'checkConflict'])->name('check-conflict');
+            Route::post('/assign',         [TimetableController::class, 'assign'])->name('assign');
+            Route::delete('/entry/{entry}', [TimetableController::class, 'removeEntry'])->name('entry.remove');
         });
     });
 });

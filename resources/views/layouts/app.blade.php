@@ -709,7 +709,7 @@
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('timetable.index') }}" class="nav-link-custom {{ request()->routeIs('timetable.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-table-cells nav-icon"></i>
                 <span class="nav-label">Timetable</span>
             </a>
