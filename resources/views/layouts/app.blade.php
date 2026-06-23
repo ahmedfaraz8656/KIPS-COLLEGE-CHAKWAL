@@ -734,7 +734,7 @@
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('audit-trail.index') }}" class="nav-link-custom {{ request()->routeIs('audit-trail.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-clock-rotate-left nav-icon"></i>
                 <span class="nav-label">Audit Trail</span>
             </a>

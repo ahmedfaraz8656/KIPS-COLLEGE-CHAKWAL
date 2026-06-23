@@ -21,6 +21,7 @@ use App\Http\Controllers\Timetable\TimetableController;
 use App\Http\Controllers\Notices\NoticeController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Settings\UserManagementController;
+use App\Http\Controllers\Settings\AuditTrailController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -263,6 +264,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/users/{user}/access-expiry',  [UserManagementController::class, 'updateAccessExpiry'])->name('users.access-expiry');
         Route::get('/users/{user}/login-history',   [UserManagementController::class, 'loginHistory'])->name('users.login-history');
         Route::delete('/users/{user}',              [UserManagementController::class, 'destroy'])->name('users.destroy');
+    });
+
+    // ── MODULE 18: AUDIT TRAIL (MD/Principal only) ──────────────
+    Route::middleware('permission:view audit trail')->prefix('audit-trail')->name('audit-trail.')->group(function () {
+        Route::get('/',     [AuditTrailController::class, 'index'])->name('index');
+        Route::get('/pdf',  [AuditTrailController::class, 'exportPdf'])->name('pdf');
     });
 });
 
