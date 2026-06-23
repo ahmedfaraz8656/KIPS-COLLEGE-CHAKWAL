@@ -741,7 +741,7 @@
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('backup.index') }}" class="nav-link-custom {{ request()->routeIs('backup.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-database nav-icon"></i>
                 <span class="nav-label">Backup & Restore</span>
             </a>

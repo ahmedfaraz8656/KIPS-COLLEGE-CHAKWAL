@@ -22,6 +22,7 @@ use App\Http\Controllers\Notices\NoticeController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Settings\UserManagementController;
 use App\Http\Controllers\Settings\AuditTrailController;
+use App\Http\Controllers\Settings\BackupController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -270,6 +271,16 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('permission:view audit trail')->prefix('audit-trail')->name('audit-trail.')->group(function () {
         Route::get('/',     [AuditTrailController::class, 'index'])->name('index');
         Route::get('/pdf',  [AuditTrailController::class, 'exportPdf'])->name('pdf');
+    });
+
+    // ── MODULE 17: BACKUP & RESTORE (MD only) ───────────────────
+    Route::middleware('permission:manage backups')->prefix('backup')->name('backup.')->group(function () {
+        Route::get('/',                [BackupController::class, 'index'])->name('index');
+        Route::post('/create',         [BackupController::class, 'createManual'])->name('create');
+        Route::get('/{backup}/download', [BackupController::class, 'download'])->name('download');
+        Route::post('/{backup}/restore', [BackupController::class, 'restore'])->name('restore');
+        Route::delete('/{backup}',     [BackupController::class, 'destroy'])->name('destroy');
+        Route::post('/undo-last',      [BackupController::class, 'undoLastAction'])->name('undo-last');
     });
 });
 
