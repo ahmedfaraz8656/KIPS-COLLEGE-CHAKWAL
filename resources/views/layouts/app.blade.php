@@ -720,14 +720,14 @@
         <div class="nav-section">System</div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('settings.users.page') }}" class="nav-link-custom {{ request()->routeIs('settings.users.page') ? 'active' : '' }}">
                 <i class="fa-solid fa-users-gear nav-icon"></i>
                 <span class="nav-label">User Management</span>
             </a>
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('settings.index') }}" class="nav-link-custom {{ request()->routeIs('settings.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-cog nav-icon"></i>
                 <span class="nav-label">Settings</span>
             </a>

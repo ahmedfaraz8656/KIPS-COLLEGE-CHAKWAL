@@ -19,6 +19,8 @@ use App\Http\Controllers\Notifications\NotificationController;
 use App\Http\Controllers\Calendar\CalendarController;
 use App\Http\Controllers\Timetable\TimetableController;
 use App\Http\Controllers\Notices\NoticeController;
+use App\Http\Controllers\Settings\SettingsController;
+use App\Http\Controllers\Settings\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -239,6 +241,28 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/{notice}/archive',  [NoticeController::class, 'archive'])->name('archive');
             Route::delete('/{notice}',        [NoticeController::class, 'destroy'])->name('destroy');
         });
+    });
+
+    // ── MODULE 16: SETTINGS (MD/Admin only) ─────────────────────
+    Route::middleware('permission:manage settings')->prefix('settings')->name('settings.')->group(function () {
+        Route::get('/',                    [SettingsController::class, 'index'])->name('index');
+        Route::post('/general',            [SettingsController::class, 'updateGeneral'])->name('general');
+        Route::post('/attendance',         [SettingsController::class, 'updateAttendance'])->name('attendance');
+        Route::post('/security',           [SettingsController::class, 'updateSecurity'])->name('security');
+        Route::post('/notifications',      [SettingsController::class, 'updateNotificationSettings'])->name('notifications');
+        Route::post('/theme',              [SettingsController::class, 'updateTheme'])->name('theme');
+        Route::post('/force-logout/{user}',[SettingsController::class, 'forceLogout'])->name('force-logout');
+
+        // User Management
+        Route::get('/users',               [UserManagementController::class, 'page'])->name('users.page');
+        Route::get('/users/list',          [UserManagementController::class, 'index'])->name('users.list');
+        Route::post('/users',              [UserManagementController::class, 'store'])->name('users.store');
+        Route::post('/users/{user}/reset-password', [UserManagementController::class, 'resetPassword'])->name('users.reset-password');
+        Route::post('/users/{user}/toggle-status',  [UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
+        Route::post('/users/{user}/roles',          [UserManagementController::class, 'updateRoles'])->name('users.roles');
+        Route::post('/users/{user}/access-expiry',  [UserManagementController::class, 'updateAccessExpiry'])->name('users.access-expiry');
+        Route::get('/users/{user}/login-history',   [UserManagementController::class, 'loginHistory'])->name('users.login-history');
+        Route::delete('/users/{user}',              [UserManagementController::class, 'destroy'])->name('users.destroy');
     });
 });
 
