@@ -65,6 +65,18 @@
         <button class="btn btn-sm mt-3" id="btnSaveGeneral" style="background:#27AE60;color:#fff;border-radius:8px;">
             <i class="fa-solid fa-save me-1"></i> Save General Settings
         </button>
+
+        <hr class="my-4">
+        <h6 style="color:#1E3A5F;">Sample / Demo Data</h6>
+        <p class="small text-muted">Load realistic sample data (teachers, students, exams, marks, attendance) to see the system in action, or remove it with one click.</p>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm" id="btnLoadDemo" style="background:#3498DB;color:#fff;border-radius:8px;">
+                <i class="fa-solid fa-flask me-1"></i> <span id="btnLoadDemoText">Load Sample Data</span>
+            </button>
+            <button class="btn btn-sm" id="btnDeleteDemo" style="background:#E74C3C;color:#fff;border-radius:8px;">
+                <i class="fa-solid fa-trash-alt me-1"></i> Delete All Sample Data
+            </button>
+        </div>
     </div>
 </div>
 
@@ -241,6 +253,34 @@ $(document).on('click', '.btn-force-logout', function () {
         if (!r.isConfirmed) return;
         $.post(`/settings/force-logout/${id}`, { _token: $('meta[name="csrf-token"]').attr('content') })
             .done(res => { toastr.success(res.message); location.reload(); });
+    });
+});
+
+$('#btnLoadDemo').on('click', function () {
+    Swal.fire({
+        title: 'Load Sample Data?',
+        text: 'This will add sample teachers, students, exams, marks, and attendance for demonstration purposes. Your existing data will not be affected.',
+        icon: 'question', showCancelButton: true, confirmButtonColor: '#3498DB', confirmButtonText: 'Yes, Load It',
+    }).then(r => {
+        if (!r.isConfirmed) return;
+        $('#btnLoadDemoText').html('<span class="spinner-border spinner-border-sm"></span> Loading...');
+        $.post('{{ route("demo-data.load") }}', { _token: $('meta[name="csrf-token"]').attr('content') })
+            .done(res => Swal.fire('Done!', res.message, 'success'))
+            .fail(xhr => toastr.error(xhr.responseJSON?.message || 'Failed.'))
+            .always(() => $('#btnLoadDemoText').text('Load Sample Data'));
+    });
+});
+
+$('#btnDeleteDemo').on('click', function () {
+    Swal.fire({
+        title: 'Delete All Sample Data?',
+        text: 'This will permanently remove all sample data. Your real data will not be affected.',
+        icon: 'warning', showCancelButton: true, confirmButtonColor: '#E74C3C', confirmButtonText: 'Yes, Delete It',
+    }).then(r => {
+        if (!r.isConfirmed) return;
+        $.post('{{ route("demo-data.delete") }}', { _token: $('meta[name="csrf-token"]').attr('content') })
+            .done(res => toastr.success(res.message))
+            .fail(xhr => toastr.error(xhr.responseJSON?.message || 'Failed.'));
     });
 });
 </script>

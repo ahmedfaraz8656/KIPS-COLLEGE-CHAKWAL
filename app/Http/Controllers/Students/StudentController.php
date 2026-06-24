@@ -211,6 +211,19 @@ class StudentController extends Controller
         $ids = $request->validate(['ids' => 'required|array|min:1'])['ids'];
 
         $students = Student::whereIn('id', $ids)->get();
+
+        // Per spec: snapshot BEFORE any bulk delete, retained 7 days, restorable
+        try {
+            app(\App\Services\BackupService::class)->createSnapshot(
+                'Bulk Delete '.count($ids).' Student(s)',
+                auth()->id()
+            );
+        } catch (\Throwable $e) {
+            // Backup tooling (mysqldump) may be unavailable in some environments —
+            // do not block the delete operation itself, but log it.
+            \Illuminate\Support\Facades\Log::warning('Pre-delete snapshot failed: '.$e->getMessage());
+        }
+
         foreach ($students as $student) {
             AuditLog::record('DELETE', 'Students', "Bulk deleted student: {$student->name}", $student->toArray());
         }

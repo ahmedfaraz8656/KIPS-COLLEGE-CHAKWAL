@@ -23,6 +23,7 @@ use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Settings\UserManagementController;
 use App\Http\Controllers\Settings\AuditTrailController;
 use App\Http\Controllers\Settings\BackupController;
+use App\Http\Controllers\Settings\DemoDataController;
 use Illuminate\Support\Facades\Route;
 
 // ─── GUEST ROUTES ────────────────────────────────────────────────
@@ -281,6 +282,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{backup}/restore', [BackupController::class, 'restore'])->name('restore');
         Route::delete('/{backup}',     [BackupController::class, 'destroy'])->name('destroy');
         Route::post('/undo-last',      [BackupController::class, 'undoLastAction'])->name('undo-last');
+    });
+
+    // ── MODULE 19: DEMO DATA (Admin/Principal/MD only) ──────────
+    Route::middleware('permission:manage settings')->prefix('demo-data')->name('demo-data.')->group(function () {
+        Route::post('/load',   [DemoDataController::class, 'load'])->name('load');
+        Route::post('/delete', [DemoDataController::class, 'delete'])->name('delete');
     });
 });
 
