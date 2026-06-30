@@ -94,7 +94,7 @@ function loadSections() {
 }
 
 function loadStudents() {
-    $.get('{{ route("results.resolve-students") }}', {
+    $.get('{{ route("exams.results.resolve-students") }}', {
         campus: $('#fCampus').val(), year: $('#fYear').val(), section_id: $('#fSection').val(),
     }, function (res) {
         if (!res.data.length) { $('#studentsBox').html('<p class="text-muted text-center py-3 small">No students found</p>'); return; }
@@ -124,7 +124,7 @@ function buildSlipForm(action) {
     if (!$('#examSelect').val()) { toastr.warning('Please select an exam first.'); return; }
     if (!selectedStudents.size) { toastr.warning('Please select at least one student.'); return; }
 
-    const form = $('<form method="POST" target="_blank"></form>').attr('action', '{{ route("roll-slips.pdf") }}');
+    const form = $('<form method="POST" target="_blank"></form>').attr('action', '{{ route("exams.roll-slips.pdf") }}');
     form.append(`<input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">`);
     form.append(`<input type="hidden" name="exam_id" value="${$('#examSelect').val()}">`);
     Array.from(selectedStudents).forEach(id => form.append(`<input type="hidden" name="student_ids[]" value="${id}">`));

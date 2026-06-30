@@ -559,6 +559,48 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Focus first field ───────────────────────────────────────
     emailInput.focus();
+
+    // ── Forgot Password: Send Reset Link ──────────────────────────
+    const sendResetBtn = document.getElementById('sendResetBtn');
+    const forgotEmailInput = document.getElementById('forgotEmail');
+
+    sendResetBtn.addEventListener('click', async function () {
+        const email = forgotEmailInput.value.trim();
+        if (!email || !/\S+@\S+\.\S+/.test(email)) {
+            Swal.fire({ icon: 'warning', title: 'Invalid Email', text: 'Please enter a valid email address.', confirmButtonColor: '#1E3A5F' });
+            return;
+        }
+
+        sendResetBtn.disabled = true;
+        const originalHtml = sendResetBtn.innerHTML;
+        sendResetBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sending...';
+
+        try {
+            const response = await fetch('{{ route("password.email") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('forgotModal')).hide();
+                Swal.fire({ icon: 'success', title: 'Reset Link Sent!', text: data.message, confirmButtonColor: '#1E3A5F' });
+                forgotEmailInput.value = '';
+            } else {
+                Swal.fire({ icon: 'error', title: 'Could Not Send Link', text: data.message, confirmButtonColor: '#1E3A5F' });
+            }
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: 'Connection Error', text: 'Could not connect to server.', confirmButtonColor: '#1E3A5F' });
+        } finally {
+            sendResetBtn.disabled = false;
+            sendResetBtn.innerHTML = originalHtml;
+        }
+    });
 });
 </script>
 </body>

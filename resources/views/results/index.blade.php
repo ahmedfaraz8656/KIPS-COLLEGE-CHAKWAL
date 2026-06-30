@@ -121,7 +121,7 @@ function loadSections() {
 }
 
 function loadStudents() {
-    $.get('{{ route("results.resolve-students") }}', {
+    $.get('{{ route("exams.results.resolve-students") }}', {
         campus: $('#fCampus').val(), year: $('#fYear').val(),
         section_id: $('#fSection').val(), search: $('#studentSearch').val(),
     }, function (res) {
@@ -156,7 +156,7 @@ $('#btnPreview').on('click', function () {
 
     $('#btnPreviewText').html('<span class="spinner-border spinner-border-sm"></span> Loading...');
 
-    $.post('{{ route("results.preview") }}', {
+    $.post('{{ route("exams.results.preview") }}', {
         _token: $('meta[name="csrf-token"]').attr('content'),
         exam_ids: Array.from(selectedExams), student_ids: Array.from(selectedStudents),
     }).done(function (res) {
@@ -182,7 +182,7 @@ $('#btnPreview').on('click', function () {
 });
 
 function buildPdfForm(download) {
-    const form = $('<form method="POST" target="_blank"></form>').attr('action', '{{ route("results.pdf") }}');
+    const form = $('<form method="POST" target="_blank"></form>').attr('action', '{{ route("exams.results.pdf") }}');
     form.append(`<input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">`);
     Array.from(selectedExams).forEach(id => form.append(`<input type="hidden" name="exam_ids[]" value="${id}">`));
     Array.from(selectedStudents).forEach(id => form.append(`<input type="hidden" name="student_ids[]" value="${id}">`));
@@ -197,7 +197,7 @@ $('#btnDownloadPdf').on('click', () => buildPdfForm(true));
 $('#btnPrint').on('click', () => buildPdfForm(false));
 
 $('#btnShareWhatsapp').on('click', function () {
-    $.post('{{ route("results.share-link") }}', {
+    $.post('{{ route("exams.results.share-link") }}', {
         _token: $('meta[name="csrf-token"]').attr('content'),
         exam_ids: Array.from(selectedExams), student_ids: Array.from(selectedStudents),
     }).done(function (res) {

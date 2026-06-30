@@ -576,16 +576,16 @@
         <div class="nav-section">Teachers</div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('teachers.index') }}" class="nav-link-custom {{ request()->routeIs('teachers.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-chalkboard-teacher nav-icon"></i>
                 <span class="nav-label">All Teachers</span>
             </a>
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="#" class="nav-link-custom">
+            <a href="{{ route('teachers.create') }}" class="nav-link-custom {{ request()->routeIs('teachers.create') ? 'active' : '' }}">
                 <i class="fa-solid fa-calendar-days nav-icon"></i>
-                <span class="nav-label">Assignments</span>
+                <span class="nav-label">Add Teacher</span>
             </a>
         </div>
         @endcanany
@@ -649,7 +649,7 @@
         @endcanany
 
         <div class="nav-item-wrapper">
-            <a href="{{ route('grading.index') }}" class="nav-link-custom {{ request()->routeIs('grading.*') ? 'active' : '' }}">
+            <a href="{{ route('exams.grading.index') }}" class="nav-link-custom {{ request()->routeIs('exams.grading.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-star-half-stroke nav-icon"></i>
                 <span class="nav-label">Grading</span>
             </a>
@@ -659,14 +659,14 @@
         <div class="nav-section">Results</div>
 
         <div class="nav-item-wrapper">
-            <a href="{{ route('results.index') }}" class="nav-link-custom {{ request()->routeIs('results.index') ? 'active' : '' }}">
+            <a href="{{ route('exams.results.index') }}" class="nav-link-custom {{ request()->routeIs('exams.results.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-chart-bar nav-icon"></i>
                 <span class="nav-label">Progress Reports</span>
             </a>
         </div>
 
         <div class="nav-item-wrapper">
-            <a href="{{ route('roll-slips.index') }}" class="nav-link-custom {{ request()->routeIs('roll-slips.index') ? 'active' : '' }}">
+            <a href="{{ route('exams.roll-slips.index') }}" class="nav-link-custom {{ request()->routeIs('exams.roll-slips.index') ? 'active' : '' }}">
                 <i class="fa-solid fa-id-card nav-icon"></i>
                 <span class="nav-label">Roll Slips</span>
             </a>
@@ -846,12 +846,12 @@
                 </button>
                 <ul class="dropdown-menu user-dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item" href="#">
+                        <a class="dropdown-item" href="{{ route('profile.show') }}">
                             <i class="fa-solid fa-user-circle text-primary"></i> My Profile
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="#">
+                        <a class="dropdown-item" href="{{ route('profile.show') }}#passwordForm">
                             <i class="fa-solid fa-lock text-warning"></i> Change Password
                         </a>
                     </li>

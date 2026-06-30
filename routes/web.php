@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Students\StudentController;
 use App\Http\Controllers\Students\StudentImportExportController;
 use App\Http\Controllers\Students\StudentTransferController;
@@ -31,6 +33,11 @@ Route::middleware('guest')->group(function () {
     Route::get('/',      [LoginController::class, 'showLoginForm'])->name('login');
     Route::get('/login', [LoginController::class, 'showLoginForm']);
     Route::post('/login',[LoginController::class, 'login'])->name('login.post');
+
+    // Forgot Password (was a dead href="#" on the login modal before this audit)
+    Route::post('/forgot-password',         [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}',   [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password',          [PasswordResetController::class, 'resetPassword'])->name('password.update');
 });
 
 // ─── AUTHENTICATED ROUTES ────────────────────────────────────────
@@ -40,6 +47,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Dashboard (role-based)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Profile (every role) — was a dead href="#" link in the user dropdown before this audit
+    Route::get('/profile',               [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile',              [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password',     [ProfileController::class, 'changePassword'])->name('profile.change-password');
 
     // Dashboard AJAX stats endpoints
     Route::prefix('dashboard/api')->group(function () {

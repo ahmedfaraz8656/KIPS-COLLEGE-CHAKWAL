@@ -173,7 +173,7 @@ $('#btnSaveTemplate').on('click', function () {
     });
 
     const id = $('#editTemplateId').val();
-    const url = id ? `/grading/${id}` : '{{ route("grading.store") }}';
+    const url = id ? `/exams/grading/${id}` : '{{ route("exams.grading.store") }}';
     const method = id ? 'PUT' : 'POST';
 
     $('#btnSaveTemplate').prop('disabled', true);
@@ -194,7 +194,7 @@ $('#btnSaveTemplate').on('click', function () {
 });
 
 $(document).on('click', '.btn-set-default', function () {
-    $.post(`/grading/${$(this).data('id')}/set-default`, { _token: $('meta[name="csrf-token"]').attr('content') })
+    $.post(`/exams/grading/${$(this).data('id')}/set-default`, { _token: $('meta[name="csrf-token"]').attr('content') })
         .done(res => { toastr.success(res.message); location.reload(); });
 });
 
@@ -203,7 +203,7 @@ $(document).on('click', '.btn-delete-template', function () {
     Swal.fire({ title: 'Are you sure?', text: `Delete "${name}"? This cannot be undone.`, icon: 'warning',
         showCancelButton: true, confirmButtonColor: '#E74C3C', confirmButtonText: 'Yes, Delete' }).then(r => {
         if (!r.isConfirmed) return;
-        $.ajax({ url: `/grading/${id}`, method: 'DELETE', data: { _token: $('meta[name="csrf-token"]').attr('content') } })
+        $.ajax({ url: `/exams/grading/${id}`, method: 'DELETE', data: { _token: $('meta[name="csrf-token"]').attr('content') } })
             .done(res => { toastr.success(res.message); location.reload(); });
     });
 });

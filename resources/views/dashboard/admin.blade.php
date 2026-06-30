@@ -43,19 +43,19 @@
                 </a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="#" class="quick-action-btn d-block">
+                <a href="{{ route('exams.create') }}" class="quick-action-btn d-block">
                     <div class="qa-icon mx-auto" style="background:rgba(243,156,18,0.1);color:#F39C12;"><i class="fa-solid fa-file-circle-plus"></i></div>
                     Create Exam
                 </a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="#" class="quick-action-btn d-block">
+                <a href="{{ route('attendance.mark') }}" class="quick-action-btn d-block">
                     <div class="qa-icon mx-auto" style="background:rgba(39,174,96,0.1);color:#27AE60;"><i class="fa-solid fa-clipboard-check"></i></div>
                     Mark Attendance
                 </a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="#" class="quick-action-btn d-block">
+                <a href="{{ route('exams.results.index') }}" class="quick-action-btn d-block">
                     <div class="qa-icon mx-auto" style="background:rgba(52,152,219,0.1);color:#3498DB;"><i class="fa-solid fa-chart-bar"></i></div>
                     View Reports
                 </a>
