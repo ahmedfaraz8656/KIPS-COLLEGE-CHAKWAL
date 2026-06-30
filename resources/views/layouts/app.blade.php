@@ -376,6 +376,35 @@
     .stat-info    .stat-icon { background: rgba(52,152,219,0.1); color: var(--info); }
 
     /* ══════════════════════════════════════════════════
+       PAGE-LEVEL POLISH (audit pass: smoother feel)
+    ══════════════════════════════════════════════════ */
+    @keyframes pageFadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    #pageContent { animation: pageFadeIn 0.3s ease; }
+
+    .stat-card, .card-custom, .quick-action-btn, .exam-card,
+    .notice-card, .template-card, .promo-row, .transfer-col {
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn, .btn-sm, button.btn-sm {
+        transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    }
+    .btn:active, .btn-sm:active, button.btn-sm:active { transform: scale(0.96); }
+
+    .nav-link-custom { transition: background var(--transition), border-left-color var(--transition), padding-left var(--transition); }
+    .nav-link-custom:hover { padding-left: 16px; }
+
+    /* Empty-state refinement used across DataTables/lists */
+    .empty-state-block {
+        text-align: center; padding: 48px 16px; color: #adb5bd;
+    }
+    .empty-state-block i { font-size: 42px; opacity: 0.3; margin-bottom: 10px; display: block; }
+    .empty-state-block p { font-size: 13px; margin: 0; color: #6C757D; }
+
+    /* ══════════════════════════════════════════════════
        CARDS
     ══════════════════════════════════════════════════ */
     .card-custom {
