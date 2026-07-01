@@ -52,12 +52,36 @@ class DashboardController extends Controller
                     'active_sections' => $this->safeCount('sections'),
                     'today_attendance'=> $this->todayAttendancePercent(),
                     'total_exams'     => $this->safeCount('exams'),
-                    'pending_fees'    => 0,
+                    'pending_fees'    => $this->pendingFeesTotal(),
+                    'fees_this_month' => $this->feesCollectedThisMonth(),
                 ];
             });
         }
 
         return [];
+    }
+
+    protected function pendingFeesTotal(): float
+    {
+        try {
+            return (float) \App\Models\Fee::where('is_demo', false)
+                ->selectRaw('SUM(amount_due - amount_paid - waiver_amount) as total')
+                ->value('total') ?? 0;
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+
+    protected function feesCollectedThisMonth(): float
+    {
+        try {
+            return (float) \App\Models\Fee::where('is_demo', false)
+                ->whereMonth('payment_date', now()->month)
+                ->whereYear('payment_date', now()->year)
+                ->sum('amount_paid');
+        } catch (\Exception $e) {
+            return 0;
+        }
     }
 
     protected function safeCount(string $table, array $where = []): int
@@ -202,16 +226,83 @@ class DashboardController extends Controller
         $this->authorizeAdmin();
         $alerts = [];
 
+        // 1. Students with attendance below 75% (computed from attendance table,
+        //    students.attendance_percent does not exist as a stored column)
         try {
-            // Low attendance students (< 75%)
-            $lowAtt = \DB::table('students')->where('attendance_percent', '<', 75)
-                        ->where('is_demo', false)->count();
-            if ($lowAtt > 0) {
+            $minPercent = (float) \App\Models\Setting::get('attendance_min_percent', 75);
+            $lowAttendanceCount = \DB::table('students')
+                ->where('is_demo', false)
+                ->where('status', 'active')
+                ->whereIn('id', function ($q) use ($minPercent) {
+                    $q->select('student_id')
+                        ->from('attendance')
+                        ->whereIn('status', ['present', 'absent', 'leave'])
+                        ->groupBy('student_id')
+                        ->havingRaw(
+                            '(SUM(CASE WHEN status = "present" THEN 1 ELSE 0 END) / COUNT(*)) * 100 < ?',
+                            [$minPercent]
+                        );
+                })
+                ->count();
+
+            if ($lowAttendanceCount > 0) {
                 $alerts[] = [
                     'type'    => 'danger',
                     'icon'    => 'fa-user-clock',
-                    'message' => "{$lowAtt} student(s) have attendance below 75%",
-                    'link'    => route('dashboard'),
+                    'message' => "{$lowAttendanceCount} student(s) have attendance below {$minPercent}%",
+                    'link'    => route('attendance.reports'),
+                ];
+            }
+        } catch (\Exception $e) {}
+
+        // 2. Recent exams (last 14 days) with incomplete marks entry
+        try {
+            $recentExams = \App\Models\Exam::where('is_demo', false)
+                ->where('exam_date', '>=', now()->subDays(14))
+                ->get();
+
+            foreach ($recentExams as $exam) {
+                $incomplete = $exam->teachersWithIncompleteMarks();
+                if ($incomplete->isNotEmpty()) {
+                    $alerts[] = [
+                        'type'    => 'warning',
+                        'icon'    => 'fa-pen-to-square',
+                        'message' => "{$exam->name}: {$incomplete->count()} section/subject(s) have pending marks entry",
+                        'link'    => route('exams.show', $exam),
+                    ];
+                }
+            }
+        } catch (\Exception $e) {}
+
+        // 3. Overdue unpaid fees
+        try {
+            $overdueCount = \App\Models\Fee::whereDate('payment_date', '<', now())
+                ->whereRaw('(amount_due - amount_paid - waiver_amount) > 0')
+                ->where('is_demo', false)
+                ->count();
+
+            if ($overdueCount > 0) {
+                $alerts[] = [
+                    'type'    => 'danger',
+                    'icon'    => 'fa-money-bill-wave',
+                    'message' => "{$overdueCount} fee record(s) are overdue and unpaid",
+                    'link'    => route('fees.reports'),
+                ];
+            }
+        } catch (\Exception $e) {}
+
+        // 4. Sections with no Class Incharge assigned
+        try {
+            $noInchargeCount = \App\Models\Section::where('status', true)
+                ->whereDoesntHave('incharge')
+                ->count();
+
+            if ($noInchargeCount > 0) {
+                $alerts[] = [
+                    'type'    => 'info',
+                    'icon'    => 'fa-user-slash',
+                    'message' => "{$noInchargeCount} section(s) have no Class Incharge assigned",
+                    'link'    => route('teachers.index'),
                 ];
             }
         } catch (\Exception $e) {}
