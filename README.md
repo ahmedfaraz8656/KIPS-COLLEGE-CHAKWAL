@@ -91,12 +91,12 @@ Password: Admin@123
 
 - **Campuses:** Boys, Girls
 - **Years:** First Year, Second Year
-- **Programs:** ICS, FSc Medical, FSc Engineering, FAIT (Girls + select Boys sections)
+- **Programs:** ICS, FSc Medical, FSc Engineering, FAIT (Girls ,Boys)
 - **Sections:**
-  - Boys 1st Year: PCB1, PCB2, PCB3, PEB/PMB
-  - Boys 2nd Year: SCB1, SCB2, SCB3, SEB/SMB
-  - Girls 1st Year: PCG1-3, PMG1-3, PEG, FAIT
-  - Girls 2nd Year: SCG1-2, SMG1-3, SEG, FAIT2
+  - Boys 1st Year: PCB1, PCB2 IT, PCB3, PEB/PMB,PSB
+  - Boys 2nd Year: SCB1, SCB2, SCB3, SEB/SMB,SSB
+  - Girls 1st Year: PCG1,PCG2,PCG3 IT PMG1,PMG2,PMG3 PEG
+  - Girls 2nd Year: SCG1,SCG2 IT SMG1,SMG2,SMG3 SEG
 - **Roles:** Managing Director, Principal, Admin, Exam Controller, Teacher, Class Incharge, Student, Parent
 
 ## ⚠️ Open Items Still Needing Ahmed's Confirmation
