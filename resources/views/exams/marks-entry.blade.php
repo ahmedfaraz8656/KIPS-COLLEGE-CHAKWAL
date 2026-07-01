@@ -10,18 +10,50 @@
 
 @push('styles')
 <style>
-    .filter-bar select { padding: 9px 14px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 13px; min-width: 160px; }
-    table.marks-table th { background: #1E3A5F; color: #fff; text-align: center; padding: 10px; font-size: 12px; }
-    table.marks-table td { text-align: center; padding: 8px; vertical-align: middle; }
-    table.marks-table tbody tr:nth-child(even) { background: #F8F9FA; }
-    table.marks-table tbody tr.row-absent { background: #fdeaea !important; opacity: .7; }
-    table.marks-table input.mark-input { width: 80px; text-align: center; border: 2px solid #e9ecef;
-        border-radius: 6px; padding: 6px; }
-    table.marks-table input.mark-input.empty-highlight { background: #FFF3CD; border-color: #F39C12; }
-    .absent-badge { background: #E74C3C; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 10px; }
-    .leave-badge { background: #F39C12; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 10px; }
-    .total-marks-pill { background: rgba(30,58,95,.08); color: #1E3A5F; font-weight: 700;
-        padding: 6px 16px; border-radius: 10px; display: inline-block; }
+    /* Filter bar */
+    .me-filter { display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end; }
+    .me-filter-group { display:flex; flex-direction:column; gap:4px; }
+    .me-filter-group label { font-size:11px; font-weight:700; color:#6C757D; text-transform:uppercase; letter-spacing:.4px; }
+    .me-filter-group select { padding:9px 14px; border:2px solid #e9ecef; border-radius:8px; font-size:13px; min-width:160px; background:#fff; }
+
+    /* Marks table */
+    table.me-table { width:100%; border-collapse:collapse; }
+    table.me-table thead tr th {
+        background:#1E3A5F; color:#fff; padding:10px 12px; font-size:12px;
+        font-weight:600; text-align:center; white-space:nowrap;
+    }
+    table.me-table tbody tr { border-bottom:1px solid #f5f5f5; transition:background .15s; }
+    table.me-table tbody tr:hover { background:#EBF5FB; }
+    table.me-table td { padding:10px 12px; font-size:13px; text-align:center; vertical-align:middle; }
+    table.me-table td.td-name { text-align:left; }
+    .photo-sm { width:30px; height:30px; border-radius:50%; object-fit:cover; }
+    input.marks-input {
+        width:80px; text-align:center; padding:6px; border:2px solid #e9ecef;
+        border-radius:8px; font-size:13px; font-weight:600; outline:none; transition:border-color .15s;
+    }
+    input.marks-input:focus { border-color:#1E3A5F; }
+    input.marks-input.over-limit { border-color:#E74C3C; background:#fff5f5; }
+    input.marks-input.empty-warn { border-color:#F39C12; background:#fffbf0; }
+    .row-absent { background:rgba(231,76,60,0.04) !important; }
+    .row-leave  { background:rgba(243,156,18,0.04) !important; }
+    .row-absent td, .row-leave td { opacity:.7; }
+    .badge-ab { background:rgba(231,76,60,.12); color:#E74C3C; font-size:10px; font-weight:700; padding:3px 8px; border-radius:8px; }
+    .badge-lv { background:rgba(243,156,18,.12); color:#F39C12; font-size:10px; font-weight:700; padding:3px 8px; border-radius:8px; }
+
+    /* Total marks pill */
+    .total-pill {
+        background:rgba(30,58,95,.08); color:#1E3A5F; font-weight:700; font-size:13px;
+        padding:8px 18px; border-radius:12px; display:inline-flex; align-items:center; gap:8px;
+    }
+    .locked-notice { background:rgba(231,76,60,.08); border:1px solid rgba(231,76,60,.2);
+        border-radius:10px; padding:12px 18px; font-size:13px; color:#c0392b; display:none; }
+    .progress-bar-thin { height:6px; background:#f0f2f5; border-radius:20px; overflow:hidden; margin-bottom:14px; }
+    .progress-bar-fill { height:100%; background:#27AE60; border-radius:20px; transition:width .4s ease; }
+
+    /* Stat bar above table */
+    .me-stat-bar { display:flex; gap:16px; flex-wrap:wrap; align-items:center; padding:12px 0; margin-bottom:6px; }
+    .me-stat { font-size:12px; color:#6C757D; display:flex; align-items:center; gap:6px; }
+    .me-stat b { color:#2C3E50; }
 </style>
 @endpush
 
@@ -36,40 +68,46 @@
     </a>
 </div>
 
+{{-- FILTERS --}}
 <div class="card-custom mb-3">
     <div class="card-body-c">
-        <div class="filter-bar d-flex gap-2 flex-wrap align-items-end">
-            <div>
-                <label class="form-label small d-block">Exam</label>
-                <select id="examSelect" class="form-select form-select-sm">
-                    <option value="">Select Exam</option>
+        <div class="me-filter">
+            <div class="me-filter-group">
+                <label>Exam</label>
+                <select id="examSelect">
+                    <option value="">— Select Exam —</option>
                     @foreach($exams as $exam)
-                        <option value="{{ $exam->id }}" data-date="{{ $exam->exam_date->format('Y-m-d') }}">{{ $exam->name }}</option>
+                        <option value="{{ $exam->id }}">{{ $exam->name }} ({{ $exam->exam_date->format('d M Y') }})</option>
                     @endforeach
                 </select>
             </div>
-            <div>
-                <label class="form-label small d-block">Year</label>
-                <select id="yearSelect" class="form-select form-select-sm" disabled>
-                    <option value="">Select Year</option><option value="first">First</option><option value="second">Second</option>
+            <div class="me-filter-group">
+                <label>Year</label>
+                <select id="yearSelect" disabled>
+                    <option value="">— Year —</option>
+                    <option value="first">First Year</option>
+                    <option value="second">Second Year</option>
                 </select>
             </div>
-            <div>
-                <label class="form-label small d-block">Campus</label>
-                <select id="campusSelect" class="form-select form-select-sm" disabled>
-                    <option value="">Select Campus</option><option value="boys">Boys</option><option value="girls">Girls</option>
+            <div class="me-filter-group">
+                <label>Campus</label>
+                <select id="campusSelect" disabled>
+                    <option value="">— Campus —</option>
+                    <option value="boys">Boys</option>
+                    <option value="girls">Girls</option>
                 </select>
             </div>
-            <div>
-                <label class="form-label small d-block">Section</label>
-                <select id="sectionSelect" class="form-select form-select-sm" disabled><option value="">Select Section</option></select>
+            <div class="me-filter-group">
+                <label>Section</label>
+                <select id="sectionSelect" disabled><option value="">— Section —</option></select>
             </div>
-            <div>
-                <label class="form-label small d-block">Subject</label>
-                <select id="subjectSelect" class="form-select form-select-sm" disabled><option value="">Select Subject</option></select>
+            <div class="me-filter-group">
+                <label>Subject</label>
+                <select id="subjectSelect" disabled><option value="">— Subject —</option></select>
             </div>
-            <div>
-                <button class="btn btn-sm" id="btnLoad" style="background:#1E3A5F;color:#fff;border-radius:8px;">
+            <div class="me-filter-group">
+                <label>&nbsp;</label>
+                <button class="btn btn-sm" id="btnLoad" style="background:#1E3A5F;color:#fff;border-radius:8px;padding:9px 18px;">
                     <i class="fa-solid fa-table me-1"></i> Load Students
                 </button>
             </div>
@@ -77,152 +115,225 @@
     </div>
 </div>
 
-<div id="marksTableBox" class="d-none">
+{{-- LOCKED NOTICE --}}
+<div class="locked-notice" id="lockedNotice">
+    <i class="fa-solid fa-lock me-2"></i>
+    <strong>Marks entry is locked.</strong> The due date for this exam has passed.
+    Please ask the Principal to extend the due date before editing marks.
+</div>
+
+{{-- MAIN MARKS TABLE AREA --}}
+<div id="marksArea" style="display:none;">
     <div class="card-custom">
         <div class="card-body-c">
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="total-marks-pill">Total Marks: <span id="totalMarksDisplay">0</span></span>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-sm" id="btnHighlightEmpty" style="background:#F39C12;color:#fff;border-radius:8px;">
+            {{-- Stats row --}}
+            <div class="me-stat-bar">
+                <div class="total-pill"><i class="fa-solid fa-star-half-stroke"></i> Total Marks: <span id="totalDisplay">0</span></div>
+                <div class="me-stat"><i class="fa-solid fa-users"></i> Students: <b id="statTotal">0</b></div>
+                <div class="me-stat"><i class="fa-solid fa-circle-check" style="color:#27AE60;"></i> Present: <b id="statPresent">0</b></div>
+                <div class="me-stat"><i class="fa-solid fa-circle-xmark" style="color:#E74C3C;"></i> Absent: <b id="statAbsent">0</b></div>
+                <div class="me-stat"><i class="fa-solid fa-plane-departure" style="color:#F39C12;"></i> Leave: <b id="statLeave">0</b></div>
+                <div class="ms-auto d-flex gap-2">
+                    <button class="btn btn-sm" id="btnHighlight" style="background:#F39C12;color:#fff;border-radius:8px;">
                         <i class="fa-solid fa-highlighter me-1"></i> Highlight Empty
                     </button>
-                    <button class="btn btn-sm" id="btnSaveTop" style="background:#27AE60;color:#fff;border-radius:8px;">
-                        <i class="fa-solid fa-save me-1"></i> <span class="save-text">Save All</span>
+                    <button class="btn btn-sm" id="btnSave" style="background:#27AE60;color:#fff;border-radius:8px;">
+                        <i class="fa-solid fa-save me-1"></i> <span id="btnSaveText">Save All</span>
                     </button>
                 </div>
             </div>
 
-            <div id="lockedWarning" class="alert alert-danger d-none">
-                <i class="fa-solid fa-lock"></i> Due date has passed. Marks entry is locked. Ask Principal to extend the due date.
-            </div>
+            {{-- Progress of filled entries --}}
+            <div class="progress-bar-thin"><div class="progress-bar-fill" id="fillProgress" style="width:0%;"></div></div>
 
+            {{-- Table --}}
             <div class="table-responsive">
-                <table class="marks-table w-100">
-                    <thead><tr><th>Roll No</th><th>Name</th><th>Father Name</th><th>Marks</th><th>Status</th></tr></thead>
-                    <tbody id="marksTableBody"></tbody>
+                <table class="me-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Photo</th>
+                            <th>Roll No</th>
+                            <th class="text-start">Name</th>
+                            <th>Obtained Marks</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marksBody"></tbody>
                 </table>
             </div>
 
-            <button class="btn btn-sm mt-3" id="btnSaveBottom" style="background:#27AE60;color:#fff;border-radius:8px;">
-                <i class="fa-solid fa-save me-1"></i> <span class="save-text">Save All</span>
-            </button>
+            {{-- Save button bottom --}}
+            <div class="text-end mt-3">
+                <button class="btn btn-sm" id="btnSaveBottom" style="background:#27AE60;color:#fff;border-radius:8px;">
+                    <i class="fa-solid fa-save me-1"></i> Save All Marks
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
-<div id="emptyState" class="text-center text-muted py-5">
-    <i class="fa-solid fa-table-list fa-3x mb-3 d-block opacity-25"></i>
-    Select Exam → Year → Campus → Section → Subject, then click Load Students.
+{{-- Empty state --}}
+<div id="emptyState">
+    <div class="empty-state-block">
+        <i class="fa-solid fa-table-list"></i>
+        <p>Select Exam → Year → Campus → Section → Subject,<br>then click <strong>Load Students</strong>.</p>
+    </div>
 </div>
 @endsection
 
 @push('scripts')
 <script>
-let currentTotalMarks = 0, isLocked = false;
+let totalMarks = 0, isLocked = false;
 
-$('#examSelect, #yearSelect, #campusSelect').on('change', function () {
-    if ($('#examSelect').val()) $('#yearSelect').prop('disabled', false);
-    if ($('#yearSelect').val()) $('#campusSelect').prop('disabled', false);
-    if ($('#examSelect').val() && $('#yearSelect').val() && $('#campusSelect').val()) {
-        $.get('{{ route("exams.marks-entry.sections") }}', {
-            exam_id: $('#examSelect').val(), campus: $('#campusSelect').val(), year: $('#yearSelect').val(),
-        }, function (res) {
-            const $s = $('#sectionSelect');
-            $s.prop('disabled', false).empty().append('<option value="">Select Section</option>');
-            res.data.forEach(s => $s.append(`<option value="${s.id}">${s.code}</option>`));
-        });
-    }
+$('#examSelect').on('change', function () {
+    $('#yearSelect, #campusSelect').prop('disabled', !$(this).val());
+    $('#sectionSelect, #subjectSelect').prop('disabled', true).find('option:gt(0)').remove();
+    hideTable();
 });
+$('#yearSelect, #campusSelect').on('change', loadSections);
+$('#sectionSelect').on('change', loadSubjects);
 
-$('#sectionSelect').on('change', function () {
-    const sectionId = $(this).val();
-    if (!sectionId) return;
-    $.get('{{ route("exams.marks-entry.subjects") }}', { exam_id: $('#examSelect').val(), section_id: sectionId }, function (res) {
-        const $sub = $('#subjectSelect');
-        $sub.prop('disabled', false).empty();
-        if (!res.data.length) {
-            $sub.append('<option value="">No subjects assigned to you here</option>');
-        } else {
-            $sub.append('<option value="">Select Subject</option>');
-            res.data.forEach(s => $sub.append(`<option value="${s.id}">${s.name}</option>`));
-        }
+function loadSections() {
+    const examId = $('#examSelect').val(), year = $('#yearSelect').val(), campus = $('#campusSelect').val();
+    if (!examId || !year || !campus) return;
+    $.get('{{ route("exams.marks-entry.sections") }}', { exam_id: examId, campus, year }, function (res) {
+        const $s = $('#sectionSelect').prop('disabled', false).empty().append('<option value="">— Section —</option>');
+        res.data.forEach(s => $s.append(`<option value="${s.id}">${s.code}</option>`));
+        $('#subjectSelect').prop('disabled', true).empty().append('<option value="">— Subject —</option>');
+        hideTable();
     });
-});
+}
+
+function loadSubjects() {
+    const examId = $('#examSelect').val(), sectionId = $('#sectionSelect').val();
+    if (!sectionId) return;
+    $.get('{{ route("exams.marks-entry.subjects") }}', { exam_id: examId, section_id: sectionId }, function (res) {
+        const $s = $('#subjectSelect').prop('disabled', false).empty();
+        if (!res.data.length) {
+            $s.append('<option value="">No subjects assigned to you</option>');
+        } else {
+            $s.append('<option value="">— Subject —</option>');
+            res.data.forEach(s => $s.append(`<option value="${s.id}">${s.name}</option>`));
+        }
+        hideTable();
+    });
+}
 
 $('#btnLoad').on('click', function () {
     const exam_id = $('#examSelect').val(), section_id = $('#sectionSelect').val(), subject_id = $('#subjectSelect').val();
-    if (!exam_id || !section_id || !subject_id) { toastr.warning('Please select all filters first.'); return; }
+    if (!exam_id || !section_id || !subject_id) { toastr.warning('Please complete all filter selections first.'); return; }
+
+    $('#btnLoad').prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Loading...');
 
     $.get('{{ route("exams.marks-entry.table") }}', { exam_id, section_id, subject_id }, function (res) {
         if (!res.success) { toastr.error(res.message); return; }
 
-        currentTotalMarks = res.total_marks;
+        totalMarks = res.total_marks;
         isLocked = res.is_locked;
-        $('#totalMarksDisplay').text(currentTotalMarks);
-        $('#lockedWarning').toggleClass('d-none', !isLocked);
-        $('.save-text').closest('button').prop('disabled', isLocked);
 
+        $('#totalDisplay').text(totalMarks);
+        $('#lockedNotice').toggle(isLocked);
+        $('#btnSave, #btnSaveBottom').prop('disabled', isLocked);
+
+        let absent = 0, leave = 0, present = 0;
         let html = '';
-        res.data.forEach(s => {
-            const isAbsentOrLeave = s.is_absent || s.is_leave;
-            html += `<tr class="${isAbsentOrLeave ? 'row-absent' : ''}" data-student="${s.student_id}">
-                <td>${s.roll_number}</td><td>${s.name}</td><td>${s.father_name}</td>
+
+        res.data.forEach((s, i) => {
+            const isAb = s.is_absent, isLv = s.is_leave;
+            if (isAb) absent++;
+            else if (isLv) leave++;
+            else present++;
+
+            html += `<tr class="${isAb ? 'row-absent' : isLv ? 'row-leave' : ''}" data-id="${s.student_id}">
+                <td>${i+1}</td>
+                <td><img src="${s.photo_url ?? '/img/default-avatar.png'}" class="photo-sm"></td>
+                <td><b>${s.roll_number}</b></td>
+                <td class="td-name">${s.name}</td>
                 <td>
-                    <input type="number" class="mark-input" min="0" max="${currentTotalMarks}"
-                        value="${isAbsentOrLeave ? 0 : (s.obtained_marks ?? '')}"
-                        ${isAbsentOrLeave || isLocked ? 'disabled' : ''}>
+                    <input type="number" class="marks-input" min="0" max="${totalMarks}"
+                        value="${(isAb || isLv) ? 0 : (s.obtained_marks ?? '')}"
+                        ${(isAb || isLv || isLocked) ? 'disabled' : ''}>
                 </td>
                 <td>
-                    ${s.is_absent ? '<span class="absent-badge">ABSENT</span>' : ''}
-                    ${s.is_leave ? '<span class="leave-badge">LEAVE</span>' : ''}
-                    ${!isAbsentOrLeave ? '<span class="text-success small">—</span>' : ''}
+                    ${isAb ? '<span class="badge-ab">AB</span>' : ''}
+                    ${isLv ? '<span class="badge-lv">LEAVE</span>' : ''}
+                    ${(!isAb && !isLv) ? '<span class="text-muted small">—</span>' : ''}
                 </td>
             </tr>`;
         });
 
-        $('#marksTableBody').html(html);
-        $('#marksTableBox').removeClass('d-none');
-        $('#emptyState').addClass('d-none');
+        $('#marksBody').html(html);
+        $('#statTotal').text(res.data.length);
+        $('#statPresent').text(present);
+        $('#statAbsent').text(absent);
+        $('#statLeave').text(leave);
+        updateProgress();
+
+        $('#emptyState').hide();
+        $('#marksArea').show();
+    }).fail(() => toastr.error('Failed to load marks table.'))
+      .always(() => $('#btnLoad').prop('disabled', false).html('<i class="fa-solid fa-table me-1"></i> Load Students'));
+});
+
+$(document).on('input', '.marks-input', function () {
+    const val = parseInt($(this).val()), max = totalMarks;
+    $(this).toggleClass('over-limit', !isNaN(val) && val > max);
+    if (!isNaN(val) && val > max) $(this).val(max);
+    $(this).removeClass('empty-warn');
+    updateProgress();
+});
+
+function updateProgress() {
+    const inputs = $('.marks-input:not([disabled])');
+    const filled = inputs.filter(function () { return $(this).val() !== ''; }).length;
+    const pct = inputs.length > 0 ? Math.round((filled / inputs.length) * 100) : 0;
+    $('#fillProgress').css('width', pct + '%');
+}
+
+$('#btnHighlight').on('click', function () {
+    $('.marks-input:not([disabled])').each(function () {
+        if ($(this).val() === '') $(this).addClass('empty-warn');
     });
+    toastr.info('Empty fields highlighted in orange.');
 });
 
-$(document).on('input', '.mark-input', function () {
-    let val = parseInt($(this).val());
-    if (val > currentTotalMarks) $(this).val(currentTotalMarks); // real-time clamp
-    $(this).removeClass('empty-highlight');
-});
-
-$('#btnHighlightEmpty').on('click', function () {
-    $('.mark-input').each(function () {
-        if ($(this).val() === '' && !$(this).prop('disabled')) $(this).addClass('empty-highlight');
-    });
-});
-
-function saveMarks() {
+function doSave() {
+    if (isLocked) { toastr.error('Marks entry is locked for this exam.'); return; }
     const marks = [];
-    $('#marksTableBody tr').each(function () {
-        marks.push({
-            student_id: $(this).data('student'),
-            obtained_marks: $(this).find('.mark-input').val() || 0,
-        });
+    let hasOverLimit = false;
+    $('#marksBody tr').each(function () {
+        const $inp = $(this).find('.marks-input');
+        const val = parseInt($inp.val()) || 0;
+        if (val > totalMarks) { hasOverLimit = true; return false; }
+        marks.push({ student_id: $(this).data('id'), obtained_marks: val });
     });
+    if (hasOverLimit) { toastr.error(`Some marks exceed the maximum (${totalMarks}). Please fix before saving.`); return; }
 
-    $('.save-text').html('<span class="spinner-border spinner-border-sm"></span> Saving...');
+    $('#btnSave, #btnSaveBottom').prop('disabled', true);
+    $('#btnSaveText').html('<span class="spinner-border spinner-border-sm"></span> Saving...');
 
     $.post('{{ route("exams.marks-entry.save") }}', {
         _token: $('meta[name="csrf-token"]').attr('content'),
-        exam_id: $('#examSelect').val(), section_id: $('#sectionSelect').val(),
-        subject_id: $('#subjectSelect').val(), marks,
-    }).done(function (res) {
-        toastr.success(res.message);
-    }).fail(function (xhr) {
-        toastr.error(xhr.responseJSON?.message || 'Save failed.');
-    }).always(function () {
-        $('.save-text').text('Save All');
-    });
+        exam_id: $('#examSelect').val(),
+        section_id: $('#sectionSelect').val(),
+        subject_id: $('#subjectSelect').val(),
+        marks,
+    }).done(res => toastr.success(res.message))
+      .fail(xhr => toastr.error(xhr.responseJSON?.message || 'Failed to save marks.'))
+      .always(() => {
+          $('#btnSave, #btnSaveBottom').prop('disabled', false);
+          $('#btnSaveText').text('Save All');
+      });
 }
 
-$('#btnSaveTop, #btnSaveBottom').on('click', saveMarks);
+$('#btnSave, #btnSaveBottom').on('click', doSave);
+
+function hideTable() {
+    $('#marksArea').hide();
+    $('#emptyState').show();
+    $('#lockedNotice').hide();
+}
 </script>
 @endpush
